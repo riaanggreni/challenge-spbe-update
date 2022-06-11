@@ -3,11 +3,22 @@
 namespace App\Http\Controllers;
 
 // use App\Helpers\ApiFormatter;
-use App\Models\M_Blog;
+
+use App\Models\Category;
+use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\BlogResource;
 
 class BlogController extends Controller
 {
+    public function view(){
+        $data = DB::table('blog')
+        ->join('category', 'blog.category_id', '=', 'category.id')->whereNull('deleted_at')->get();
+        return response()->json([
+            'data' => $data,
+        ]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,8 +26,11 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $data = M_Blog::all();
+        // $data = Blog::all();
+        $data = DB::table('blog')
+        ->join('category', 'blog.category_id', '=', 'category.id')->whereNull('deleted_at')->get();
 
+        $data = Blog::latest()->get();
         // if($data){
         //     return ApiFormatter::createApi(200, 'Success', $data);
         // } else {
@@ -35,7 +49,9 @@ class BlogController extends Controller
      */
     public function create()
     {
-        return view('create');
+        $category = Category::all();
+
+        return view('create', compact('category'));
     }
 
     /**
@@ -48,6 +64,7 @@ class BlogController extends Controller
     {
         $this->validate($request,[
             'name' => 'required',
+            'category_id' => 'required',
             'description' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
@@ -57,7 +74,15 @@ class BlogController extends Controller
             $imgName = time().'.'.$request->file('image')->extension();
             $data['image'] = $request->file('image')->move('blog',$imgName);
         }
-        M_Blog::insert($data);
+
+        $Blog = Blog::create([
+            'name' => $request->name,
+            'desc' => $request->desc
+         ]);
+        
+        return response()->json(['Program created successfully.', new BlogResource($Blog)]);
+
+        Blog::insert($data);
         return redirect('/');
     }
 
@@ -69,7 +94,11 @@ class BlogController extends Controller
      */
     public function show($id)
     {
-        //
+        $Blog = Blog::find($id);
+        if (is_null($Blog)) {
+            return response()->json('Data not found', 404); 
+        }
+        return response()->json([new BlogResource($Blog)]);
     }
 
     /**
@@ -80,10 +109,12 @@ class BlogController extends Controller
      */
     public function edit($id)
     {
-        $data = M_Blog::findOrFail($id);
+        $category = Category::all();
+        $data = Blog::findOrFail($id);
         
         return view('edit')->with([
-            'results' => $data
+            'results' => $data,
+            'category' => $category
         ]);
     }
 
@@ -102,7 +133,7 @@ class BlogController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $item = M_Blog::findOrFail($id);
+        $item = Blog::findOrFail($id);
         $data = $request->except(['_token']);
 
         if($request->file('image')){
@@ -127,9 +158,10 @@ class BlogController extends Controller
      */
     public function destroy($id)
     {
-        $item = M_Blog::findOrFail($id);
+        $item = Blog::findOrFail($id);
         unlink($item->image);
         $item->delete();
         return redirect('/');
+        return response()->json('Blog deleted successfully');
     }
 }

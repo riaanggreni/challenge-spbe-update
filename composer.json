@@ -8,7 +8,7 @@
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.11",
-        "laravel/sanctum": "^2.14.1",
+        "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7"
     },
     "require-dev": {
@@ -22,6 +22,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "SPBE\\NobleUI\\": "vendor/spbe/noble-ui/src",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }

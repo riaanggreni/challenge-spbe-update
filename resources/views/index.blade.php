@@ -16,16 +16,21 @@
                 <a href="{{ url('create') }}" class="btn btn-primary"> + Create Blog </a>
                 <table class="table mt-2">
                     <tr>
-                        <th>Id</th>
+                        <th>No</th>
                         <th>Name</th>
+                        <th>Category</th>
                         <th>Description</th>
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
+                    @php
+                        $no=1;
+                    @endphp
                     @forelse ($results as $item )
                     <tr>
-                        <td>{{ $item->id }}</td>
+                        <td>{{ $no++ }}</td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->name_category }}</td>
                         <td>{{ $item->description }}</td>
                         <td><img src="{{ $item->image }}" width="100px"></td>
                         <td>

@@ -20,5 +20,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+//Protecting Routes
+Route::resource('Blog', App\Http\Controllers\API\BlogController::class);
+
+
 Route::apiResource('/store', BlogController::class);
 Route::apiResource('/', BlogController::class);
+
+
+Route::group([
+    'middleware' => 'api',
+], function () {
+    Route::get('/view',[BlogController::class,'view']);
+});

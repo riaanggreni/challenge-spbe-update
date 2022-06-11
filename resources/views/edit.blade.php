@@ -22,6 +22,15 @@
                         @error('name') <i class="text-danger">{{ $message }}</i> @enderror
                     </div>
                     <div class="form-group mt-2">
+                        <label for="category_id">Category : </label>
+                        <select name="category_id" id="" class="form-control">
+                            @foreach ($category as $item)
+                                <option value="{{ $item->id }}"> {{ $item->name_category }}</option>
+                            @endforeach
+                        @error('category_id') <i class="text-danger">{{ $message }}</i> @enderror
+                        </select>
+                    </div>
+                    <div class="form-group mt-2">
                         <label for="name">Description : </label>
                         <input type="text" name="description" class="form-control" 
                             value="{{ old('description') ? old('description') : $results->description }}">
